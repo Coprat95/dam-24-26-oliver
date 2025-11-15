@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "192759120333",
+    "firebase_url": "https://maraton-9e7f2-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "maraton-9e7f2",
+    "storage_bucket": "maraton-9e7f2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:192759120333:android:c6d9314757637cf9e28484",
+        "android_client_info": {
+          "package_name": "com.example.cursaprat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPXyRWWdc0RZ34tUMdzXYIq9R304cKFXw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
