@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <!-- Botón para reproducir sonido corto -->
+    <Button
+        android:id="@+id/buttonCorto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="audioCorto"
+        android:text="Sonido corto"
+        app:layout_constraintBottom_toTopOf="@+id/buttonLargo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.4" />
+
+    <!-- Botón para reproducir sonido largo -->
+    <Button
+        android:id="@+id/buttonLargo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="audioLargo"
+        android:text="Sonido largo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonCorto"
+        app:layout_constraintVertical_bias="0.6" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

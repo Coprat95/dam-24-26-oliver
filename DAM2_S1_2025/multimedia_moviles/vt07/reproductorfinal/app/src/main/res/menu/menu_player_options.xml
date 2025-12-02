@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_add_to_playlist_player"
+        android:title="Añadir a Lista" />
+
+    <item
+        android:id="@+id/action_change_cover_player"
+        android:title="Añadir Carátula/Foto" />
+
+    <item
+        android:id="@+id/action_rename_player"
+        android:title="Cambiar nombre" />
+
+    <item
+        android:id="@+id/action_delete_player"
+        android:title="Eliminar" />
+</menu>

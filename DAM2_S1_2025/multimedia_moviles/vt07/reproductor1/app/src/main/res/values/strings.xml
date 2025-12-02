@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">MP3Oliver</string>
+    <string name="image_song">Imagen de la canción</string>
+    <string name="default_title">Título - Artista</string>
+    <string name="desc_caratula">Carátula de la canción</string>
+    <string name="desc_play">Reproducir</string>
+    <string name="desc_stop">Detener</string>
+    <string name="desc_anterior">Anterior canción</string>
+    <string name="desc_siguiente">Siguiente canción</string>
+
+</resources>

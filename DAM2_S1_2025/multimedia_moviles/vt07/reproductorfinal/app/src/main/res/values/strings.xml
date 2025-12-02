@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">NeonBeat</string>
+    <string name="default_title">Título - Artista</string>
+    <string name="desc_caratula">Carátula de la canción</string>
+    <string name="desc_play">Reproducir / Pausar</string>
+    <string name="desc_stop">Detener la canción</string>
+    <string name="desc_anterior">Anterior canción</string>
+    <string name="desc_siguiente">Siguiente canción</string>
+    <string name="desc_shuffle">Activar/Desactivar modo aleatorio</string>
+    <string name="desc_repeat">Activar/Desactivar repetición automática</string>
+</resources>

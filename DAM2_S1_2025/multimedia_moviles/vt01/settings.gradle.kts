@@ -19,5 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "TestJava17"
+rootProject.name = "EjemploLogin"
 include(":app")
+ 

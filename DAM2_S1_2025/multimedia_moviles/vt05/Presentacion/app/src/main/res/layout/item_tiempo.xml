@@ -1,0 +1,30 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:background="@android:color/darker_gray">
+
+    <TextView
+        android:id="@+id/txtPunto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Punto de control: Meta"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/txtIdCorredor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Corredor ID: id1"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/txtTiempo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tiempo: 01:45:23"
+        android:textColor="@android:color/white" />
+</LinearLayout>

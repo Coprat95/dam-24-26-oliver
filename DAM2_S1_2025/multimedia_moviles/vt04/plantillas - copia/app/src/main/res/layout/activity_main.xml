@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutPrincipal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+    <!-- Título principal de la pantalla -->
+    <TextView
+        android:id="@+id/txtTitulo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Listado de Clientes"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:paddingBottom="16dp" />
+
+    <!-- Muestra el número total de clientes en la BBDD -->
+    <TextView
+        android:id="@+id/txtNumClientes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="0 clientes en la BBDD"
+        android:textSize="18sp"
+        android:textColor="#333333"
+        android:paddingBottom="8dp" />
+
+    <!-- Muestra el listado textual de clientes -->
+    <TextView
+        android:id="@+id/txtListado_Clientes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No hay clientes cargados"
+        android:textSize="16sp"
+        android:textColor="#555555"
+        android:lineSpacingExtra="4dp" />
+
+</LinearLayout>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "726915949743",
+    "project_id": "maraton2-7ae6e",
+    "storage_bucket": "maraton2-7ae6e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:726915949743:android:9a048a8130dc40e844605a",
+        "android_client_info": {
+          "package_name": "com.example.presentacion"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAz2Klovi86kCzH60CGq0CpB9cj047IiEU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

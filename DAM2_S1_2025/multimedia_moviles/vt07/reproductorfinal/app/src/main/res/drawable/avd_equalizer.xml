@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector
+            android:width="24dp"
+            android:height="24dp"
+            android:viewportWidth="24"
+            android:viewportHeight="24">
+            <group>
+                <path
+                    android:name="bar1"
+                    android:pathData="M4,18 L4,6"
+                    android:strokeWidth="4"
+                    android:strokeColor="#34F5C5" />
+                <path
+                    android:name="bar2"
+                    android:pathData="M12,18 L12,6"
+                    android:strokeWidth="4"
+                    android:strokeColor="#34F5C5" />
+                <path
+                    android:name="bar3"
+                    android:pathData="M20,18 L20,6"
+                    android:strokeWidth="4"
+                    android:strokeColor="#34F5C5" />
+            </group>
+        </vector>
+    </aapt:attr>
+    <target android:name="bar1">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="400"
+                android:interpolator="@android:interpolator/fast_out_slow_in"
+                android:propertyName="pathData"
+                android:repeatCount="infinite"
+                android:repeatMode="reverse"
+                android:valueFrom="M4,18 L4,6"
+                android:valueTo="M4,18 L4,12"
+                android:valueType="pathType" />
+        </aapt:attr>
+    </target>
+    <target android:name="bar2">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="300"
+                android:interpolator="@android:interpolator/fast_out_slow_in"
+                android:propertyName="pathData"
+                android:repeatCount="infinite"
+                android:repeatMode="reverse"
+                android:valueFrom="M12,18 L12,6"
+                android:valueTo="M12,18 L12,8"
+                android:valueType="pathType" />
+        </aapt:attr>
+    </target>
+    <target android:name="bar3">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="500"
+                android:interpolator="@android:interpolator/fast_out_slow_in"
+                android:propertyName="pathData"
+                android:repeatCount="infinite"
+                android:repeatMode="reverse"
+                android:valueFrom="M20,18 L20,6"
+                android:valueTo="M20,18 L20,14"
+                android:valueType="pathType" />
+        </aapt:attr>
+    </target>
+</animated-vector>
