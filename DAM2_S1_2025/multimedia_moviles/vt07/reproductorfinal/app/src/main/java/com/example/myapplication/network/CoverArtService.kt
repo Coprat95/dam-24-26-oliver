@@ -4,8 +4,8 @@ import android.util.Log
 
 class CoverArtService {
 
-    suspend fun getCoverArtUrl(artist: String, releaseTitle: String): String? {
-        val query = "artist:\"$artist\" AND release:\"$releaseTitle\""
+    suspend fun getCoverArtUrl(artist: String): String? {
+        val query = "artist:\"$artist\""
         return try {
             val response = RetrofitClient.musicBrainzApiService.searchRelease(query)
             val releaseId = response.releases?.firstOrNull()?.id

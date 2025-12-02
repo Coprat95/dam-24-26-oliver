@@ -312,6 +312,7 @@ class AllSongsActivity : AppCompatActivity() {
                 R.id.action_add_to_playlist -> { mostrarDialogoSeleccionLista(cancion); true }
                 R.id.action_rename -> { mostrarDialogoRenombrar(cancion); true }
                 R.id.action_delete -> { mostrarDialogoEliminar(cancion); true }
+                R.id.action_credits -> { startActivity(Intent(this, CreditsActivity::class.java)); true }
                 else -> false
             }
         }

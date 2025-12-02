@@ -24,7 +24,8 @@
         <activity
             android:name=".HomeActivity"
             android:exported="true"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -48,11 +49,12 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".PlayerActivity" android:launchMode="singleTop"/>
-        <activity android:name=".PlaylistsActivity" android:launchMode="singleTop"/>
-        <activity android:name=".PlaylistDetailActivity" android:launchMode="singleTop"/>
-        <activity android:name=".AllSongsActivity" android:launchMode="singleTop"/>
-        <activity android:name=".AddSongsToPlaylistActivity" android:launchMode="singleTop"/>
+        <activity android:name=".PlayerActivity" android:launchMode="singleTop" android:screenOrientation="portrait"/>
+        <activity android:name=".PlaylistsActivity" android:launchMode="singleTop" android:screenOrientation="portrait"/>
+        <activity android:name=".PlaylistDetailActivity" android:launchMode="singleTop" android:screenOrientation="portrait"/>
+        <activity android:name=".AllSongsActivity" android:launchMode="singleTop" android:screenOrientation="portrait"/>
+        <activity android:name=".AddSongsToPlaylistActivity" android:launchMode="singleTop" android:screenOrientation="portrait"/>
+        <activity android:name=".CreditsActivity" android:launchMode="singleTop" android:screenOrientation="portrait"/>
 
     </application>
 
