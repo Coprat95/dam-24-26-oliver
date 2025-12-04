@@ -22,6 +22,10 @@ class SongRepository(private val songDao: SongDao, private val context: Context)
         ).flow
     }
 
+    suspend fun getAllSongs(): List<Song> {
+        return songDao.getAllSongs()
+    }
+
     suspend fun hideSongs(uris: List<String>) {
         songDao.hideSongs(uris)
     }

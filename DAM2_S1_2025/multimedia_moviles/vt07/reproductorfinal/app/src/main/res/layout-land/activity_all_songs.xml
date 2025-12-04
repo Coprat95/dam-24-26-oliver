@@ -8,42 +8,81 @@
     android:background="#0F1020"
     tools:context=".AllSongsActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <!-- CABECERA -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="#0F1020"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!-- BOTÓN VOLVER (Flecha Atrás) -->
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_arrow_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:tint="#FFFFFF"
+            android:scaleType="fitCenter"
+            android:padding="8dp"
+            android:contentDescription="Volver"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <!-- BOTÓN DE ACCIÓN (Añadir/Borrar) -->
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btnAction"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_gravity="end"
             android:src="@drawable/ic_add_circle"
             android:background="?attr/selectableItemBackgroundBorderless"
             app:tint="#34F5C5"
             android:scaleType="fitCenter"
             android:padding="8dp"
-            android:contentDescription="Añadir Canción"/>
+            android:contentDescription="Añadir Canción"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
+        <!-- BOTÓN SELECCIONAR TODO -->
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btnSelectAll"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_gravity="end"
             android:src="@drawable/ic_list_bulleted"
             android:background="?attr/selectableItemBackgroundBorderless"
             app:tint="#FFFFFF"
             android:scaleType="fitCenter"
             android:padding="8dp"
             android:contentDescription="Seleccionar Todo"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@id/btnAction"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
-    </androidx.appcompat.widget.Toolbar>
+        <!-- TÍTULO CENTRADO -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Todas las Canciones"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintStart_toEndOf="@id/btnBack"
+            app:layout_constraintEnd_toStartOf="@id/btnSelectAll"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- LISTA DE CANCIONES -->
     <androidx.recyclerview.widget.RecyclerView
@@ -51,7 +90,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:padding="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintTop_toBottomOf="@id/header"
         app:layout_constraintBottom_toTopOf="@+id/miniPlayer" />
 
     <!-- TEXTO VACÍO -->

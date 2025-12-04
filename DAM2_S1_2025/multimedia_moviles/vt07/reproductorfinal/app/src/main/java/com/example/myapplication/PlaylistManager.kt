@@ -59,7 +59,7 @@ object PlaylistManager {
 
         val uri = cancion.audioUriString
         val tituloPersistente = if (uri != null) SongMetadataManager.getTitulo(uri) else null
-        val coverPersistente  = if (uri != null) SongMetadataManager.getCaratula(uri) else null
+        val coverPersistente  = if (uri != null) SongMetadataManager.getCaratula(context, uri) else null
 
         val cancionAGuardar = cancion.copy(
             titulo = tituloPersistente ?: cancion.titulo,

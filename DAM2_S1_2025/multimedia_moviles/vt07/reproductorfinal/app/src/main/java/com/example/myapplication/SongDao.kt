@@ -15,6 +15,9 @@ interface SongDao {
     @Query("SELECT * FROM songs WHERE NOT isHidden ORDER BY titulo ASC")
     fun pagingSource(): PagingSource<Int, Song>
 
+    @Query("SELECT * FROM songs WHERE NOT isHidden ORDER BY titulo ASC")
+    suspend fun getAllSongs(): List<Song>
+
     @Query("UPDATE songs SET isHidden = 1 WHERE audioUriString IN (:uris)")
     suspend fun hideSongs(uris: List<String>)
 

@@ -12,53 +12,67 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+// CAMBIO: El nombre de la clase ahora es AllSongsViewModel para que coincida con el que usa la Activity
 class AllSongsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _songs = MutableLiveData<List<InfoCancion>>()
     val songs: LiveData<List<InfoCancion>> = _songs
     private val coverArtService = CoverArtService()
 
-    fun loadSongs() {
-        viewModelScope.launch {
-            val songList = withContext(Dispatchers.IO) {
-                AudioDB.getAllSongs(getApplication())
-            }
-            withContext(Dispatchers.IO) {
-                HiddenSongsManager.load(getApplication())
-            }
-            val filteredList = songList.filter { song ->
-                song.audioUriString?.let { !HiddenSongsManager.isHidden(it) } ?: true
-            }
-            _songs.postValue(filteredList)
+    private val COVER_ART_TAG = "CoverArtService"
 
-            launch(Dispatchers.IO) {
-                var listUpdated = false
-                for (song in filteredList) {
-                    if (song.customImageUriString == null && song.artista.isNotEmpty()) {
-                        try {
-                            Log.d("CoverArt", "Buscando carátula para: ${song.artista}")
-                            val coverUrl = coverArtService.getCoverArtUrl(song.artista)
-                            if (coverUrl != null) {
-                                Log.d("CoverArt", "Carátula encontrada: $coverUrl")
-                                song.customImageUriString = coverUrl
-                                song.audioUriString?.let { uri ->
-                                    SongMetadataManager.guardarCaratula(getApplication(), uri, coverUrl)
-                                }
-                                listUpdated = true
-                            } else {
-                                Log.d("CoverArt", "No se encontró carátula para: ${song.artista}")
-                            }
-                        } catch (e: Exception) {
-                            Log.e("CoverArt", "Error buscando carátula: ${e.message}")
-                        }
-                        delay(1000) // Pausa de 1 segundo para no sobrecargar la API
-                    }
+    fun loadSongs() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val songList = AudioDB.getAllSongs(getApplication())
+                HiddenSongsManager.load(getApplication())
+                val filteredList = songList.filter {
+                    it.audioUriString?.let { uri -> !HiddenSongsManager.isHidden(uri) } ?: true
                 }
-                
-                if (listUpdated) {
-                    _songs.postValue(filteredList)
+
+                withContext(Dispatchers.Main) {
+                    _songs.value = filteredList
+                }
+
+                launchCoverArtJobs(filteredList)
+
+            } catch (e: Exception) {
+                Log.e("Neonbeat-Error", "ViewModel: Error CRÍTICO en la corrutina de loadSongs. ${e.message}", e)
+            }
+        }
+    }
+
+    private fun launchCoverArtJobs(songs: List<InfoCancion>) {
+        Log.i(COVER_ART_TAG, "Iniciando el proceso de búsqueda de carátulas para ${songs.size} canciones.")
+
+        viewModelScope.launch(Dispatchers.IO) {
+            songs.forEach { song ->
+                if (song.customImageUriString.isNullOrBlank() && !song.artista.isNullOrBlank() && song.artista != "<unknown>") {
+                    try {
+                        Log.i(COVER_ART_TAG, "-> Buscando para '${song.titulo}' (Artista: '${song.artista}')")
+
+                        val coverUrl = coverArtService.getCoverArtUrl(song.artista!!, song.titulo, song.album)
+
+                        if (coverUrl != null) {
+                            Log.i(COVER_ART_TAG, "-> ¡ÉXITO! Carátula encontrada para '${song.titulo}': $coverUrl")
+                            song.customImageUriString = coverUrl
+                            song.audioUriString?.let { SongMetadataManager.guardarCaratula(getApplication(), it, coverUrl) }
+
+                            withContext(Dispatchers.Main) {
+                                _songs.value = _songs.value?.toList()
+                            }
+                        } else {
+                            Log.w(COVER_ART_TAG, "-> SIN ÉXITO para '${song.titulo}'. Ninguna API devolvió resultados.")
+                        }
+                    } catch (e: Exception) {
+                        Log.e(COVER_ART_TAG, "-> ERROR FATAL buscando para '${song.titulo}': ${e.message}", e)
+                    }
+                    delay(1000)
+                } else {
+                    Log.i(COVER_ART_TAG, "-> OMITIENDO búsqueda para '${song.titulo}' (razón: ya tiene carátula o artista es desconocido).")
                 }
             }
+            Log.i(COVER_ART_TAG, "Proceso de búsqueda de carátulas finalizado.")
         }
     }
 }

@@ -1,7 +1,17 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp") version "1.9.22-1.0.17"
+}
+
+// Lee las propiedades locales para acceder a las claves de API
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
 }
 
 android {
@@ -16,6 +26,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Expone las claves de API como campos de BuildConfig
+        val lastFmApiKey = (localProperties.getProperty("lastfm.apiKey") ?: "").replace("\"", "")
+        val discogsApiToken = (localProperties.getProperty("discogs.apiToken") ?: "").replace("\"", "")
+        buildConfigField("String", "LASTFM_API_KEY", "\"$lastFmApiKey\"")
+        buildConfigField("String", "DISCOGS_API_TOKEN", "\"$discogsApiToken\"")
     }
 
     buildTypes {
@@ -36,6 +52,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -61,9 +78,11 @@ dependencies {
 
     implementation ("androidx.palette:palette-ktx:1.0.0")
 
-    // Retrofit
+    // Retrofit y OkHttp
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.12.0") // Añadido para depuración
 
     // Room and Paging
     val room_version = "2.6.1"

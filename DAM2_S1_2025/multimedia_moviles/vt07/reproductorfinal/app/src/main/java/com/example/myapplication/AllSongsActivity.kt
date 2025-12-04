@@ -4,10 +4,12 @@ import android.app.ActivityOptions
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.OpenableColumns
+import android.util.Log
 import android.view.View
 import android.webkit.MimeTypeMap
 import android.widget.EditText
@@ -35,6 +37,8 @@ import java.util.UUID
 
 class AllSongsActivity : AppCompatActivity() {
 
+    private val TAG = "Neonbeat-Debug" // Tag para nuestros logs de diagnóstico
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var tvEmpty: TextView
     private lateinit var adapter: SongsAdapter
@@ -47,7 +51,14 @@ class AllSongsActivity : AppCompatActivity() {
     private var isSelectionMode = false
 
     private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-        if (isGranted) viewModel.loadSongs() else Toast.makeText(this, "Permiso denegado", Toast.LENGTH_SHORT).show()
+        Log.d(TAG, "requestPermissionLauncher: Callback recibido. Permiso concedido = $isGranted")
+        if (isGranted) {
+            Log.i(TAG, "requestPermissionLauncher: ¡Permiso concedido! Llamando a viewModel.loadSongs()")
+            viewModel.loadSongs()
+        } else {
+            Log.e(TAG, "requestPermissionLauncher: Permiso DENEGADO por el usuario.")
+            Toast.makeText(this, "Permiso de lectura de audio denegado", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private val imagePickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -72,6 +83,7 @@ class AllSongsActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onCreate: Actividad AllSongsActivity CREADA.")
         setupTransitions()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_all_songs)
@@ -106,6 +118,7 @@ class AllSongsActivity : AppCompatActivity() {
                                 }
                             }
                             HiddenSongsManager.load(this)
+                            Log.d(TAG, "onCreate (Ocultar): Llamando a viewModel.loadSongs()")
                             viewModel.loadSongs()
                             adapter.setMode(false)
                             Toast.makeText(this, "${selectedSongs.size} canciones ocultas", Toast.LENGTH_SHORT).show()
@@ -144,7 +157,9 @@ class AllSongsActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
+        Log.d(TAG, "onCreate: Configurando observador para viewModel.songs")
         viewModel.songs.observe(this) { songs ->
+            Log.d(TAG, "viewModel.songs.observe: Se recibió una nueva lista con ${songs.size} canciones.")
             val currentSongs = ArrayList(songs)
             adapter.updateSongs(currentSongs)
             if (currentSongs.isEmpty()) {
@@ -158,6 +173,8 @@ class AllSongsActivity : AppCompatActivity() {
 
         setupMiniPlayer()
         setupObservers()
+        
+        Log.d(TAG, "onCreate: Llamando a checkPermissionsAndLoadSongs() para iniciar la carga.")
         checkPermissionsAndLoadSongs()
     }
 
@@ -169,7 +186,9 @@ class AllSongsActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.loadSongs()
+        // Se elimina la llamada a viewModel.loadSongs() de aquí para evitar cargas múltiples.
+        // La carga se gestiona ahora únicamente en onCreate y en el callback de permisos.
+        Log.d(TAG, "onResume: Actividad AllSongsActivity VISIBLE.")
     }
 
     private fun getFileExtension(uri: Uri): String? {
@@ -217,8 +236,16 @@ class AllSongsActivity : AppCompatActivity() {
     }
 
     private fun checkPermissionsAndLoadSongs() {
+        Log.d(TAG, "checkPermissionsAndLoadSongs: Verificando permisos de audio...")
         val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) android.Manifest.permission.READ_MEDIA_AUDIO else android.Manifest.permission.READ_EXTERNAL_STORAGE
-        if (ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) viewModel.loadSongs() else requestPermissionLauncher.launch(permission)
+        
+        if (ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
+            Log.i(TAG, "checkPermissionsAndLoadSongs: ¡Permiso ya concedido! Llamando a viewModel.loadSongs()")
+            viewModel.loadSongs()
+        } else {
+            Log.w(TAG, "checkPermissionsAndLoadSongs: El permiso no está concedido. Solicitándolo...")
+            requestPermissionLauncher.launch(permission)
+        }
     }
 
     private fun agregarCancionManual(uri: Uri) {
@@ -239,6 +266,7 @@ class AllSongsActivity : AppCompatActivity() {
 
             SongMetadataManager.guardarTitulo(this, nuevaUri, nombreCancion)
 
+            Log.d(TAG, "agregarCancionManual: Llamando a viewModel.loadSongs()")
             viewModel.loadSongs()
             Toast.makeText(this, "Canción añadida", Toast.LENGTH_SHORT).show()
         } else {
@@ -276,11 +304,9 @@ class AllSongsActivity : AppCompatActivity() {
 
         MusicPlayerManager.isPlaying.observe(this) { isPlaying ->
             adapter.setPlayingState(isPlaying)
-            val miniPlayerPlay = findViewById<ImageButton>(R.id.miniPlayerPlay)
-            if (isPlaying) {
-                miniPlayerPlay.setImageResource(R.drawable.stop_mini)
-            } else {
-                miniPlayerPlay.setImageResource(R.drawable.play_mini)
+            findViewById<ImageButton>(R.id.miniPlayerPlay).setImageResource(if (isPlaying) R.drawable.stop_mini else R.drawable.play_mini)
+            MusicPlayerManager.currentSong.value?.let {
+                updateMiniPlayerUI(it)
             }
         }
     }
@@ -289,14 +315,30 @@ class AllSongsActivity : AppCompatActivity() {
         val miniPlayerTitle = findViewById<TextView>(R.id.miniPlayerTitle)
         val miniPlayerArtist = findViewById<TextView>(R.id.miniPlayerArtist)
         val miniPlayerCover = findViewById<ImageView>(R.id.miniPlayerCover)
+        val miniPlayerEqualizer = findViewById<ImageView>(R.id.miniPlayerEqualizer)
+        val avd = miniPlayerEqualizer.drawable as? AnimatedVectorDrawable
 
         miniPlayerTitle.text = song.titulo
         miniPlayerArtist.text = song.artista
 
-        if (song.customImageUriString != null) {
-            Glide.with(this).load(song.customImageUriString).into(miniPlayerCover)
+        val isPlaying = MusicPlayerManager.isPlaying.value ?: false
+
+        if (isPlaying) {
+            miniPlayerCover.visibility = View.GONE
+            miniPlayerEqualizer.visibility = View.VISIBLE
+            avd?.start()
         } else {
-            miniPlayerCover.setImageResource(R.drawable.nota_musical)
+            miniPlayerEqualizer.visibility = View.GONE
+            avd?.stop()
+            miniPlayerCover.visibility = View.VISIBLE
+
+            if (song.customImageUriString != null) {
+                miniPlayerCover.clearColorFilter()
+                Glide.with(this).load(song.customImageUriString).into(miniPlayerCover)
+            } else {
+                miniPlayerCover.setImageResource(R.drawable.nota_musical)
+                miniPlayerCover.setColorFilter(ContextCompat.getColor(this, android.R.color.white))
+            }
         }
     }
 
@@ -334,7 +376,7 @@ class AllSongsActivity : AppCompatActivity() {
         builder.setItems(listasDisponibles.toTypedArray()) { _: DialogInterface, which: Int ->
             val nombreLista = listasDisponibles[which]
             val uri = cancion.audioUriString
-            val globalCover = if (uri != null) SongMetadataManager.getCaratula(uri) else null
+            val globalCover = if (uri != null) SongMetadataManager.getCaratula(this, uri) else null
             val globalTitle = if (uri != null) SongMetadataManager.getTitulo(uri) else null
 
             val cancionAGuardar = cancion.copy(
@@ -380,6 +422,7 @@ class AllSongsActivity : AppCompatActivity() {
                 if (cancion.audioUriString != null) {
                     HiddenSongsManager.hideSong(this, cancion.audioUriString)
                     HiddenSongsManager.load(this)
+                    Log.d(TAG, "mostrarDialogoEliminar: Llamando a viewModel.loadSongs()")
                     viewModel.loadSongs()
                     Toast.makeText(this, "Canción oculta", Toast.LENGTH_SHORT).show()
                 } else {

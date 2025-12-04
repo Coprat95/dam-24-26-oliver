@@ -3,6 +3,7 @@ package com.example.myapplication
 import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Intent
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
@@ -158,7 +159,7 @@ class PlaylistDetailActivity : AppCompatActivity() {
             val artist = song.artista ?: ""
             val updatedSong = song.copy(
                 artista = if (artist == "<unknown>") "" else artist,
-                customImageUriString = SongMetadataManager.getCaratula(song.audioUriString ?: "") ?: song.customImageUriString
+                customImageUriString = SongMetadataManager.getCaratula(this, song.audioUriString ?: "") ?: song.customImageUriString
             )
             if (!HiddenSongsManager.isHidden(updatedSong.audioUriString ?: ""))
                 cancionesLista.add(updatedSong)
@@ -210,11 +211,9 @@ class PlaylistDetailActivity : AppCompatActivity() {
 
         MusicPlayerManager.isPlaying.observe(this) { isPlaying ->
             adapter.setPlayingState(isPlaying)
-            val miniPlayerPlay = findViewById<ImageButton>(R.id.miniPlayerPlay)
-            if (isPlaying) {
-                miniPlayerPlay.setImageResource(R.drawable.stop_mini)
-            } else {
-                miniPlayerPlay.setImageResource(R.drawable.play_mini)
+            findViewById<ImageButton>(R.id.miniPlayerPlay).setImageResource(if (isPlaying) R.drawable.stop_mini else R.drawable.play_mini)
+            MusicPlayerManager.currentSong.value?.let {
+                updateMiniPlayerUI(it)
             }
         }
     }
@@ -223,14 +222,30 @@ class PlaylistDetailActivity : AppCompatActivity() {
         val miniPlayerTitle = findViewById<TextView>(R.id.miniPlayerTitle)
         val miniPlayerArtist = findViewById<TextView>(R.id.miniPlayerArtist)
         val miniPlayerCover = findViewById<ImageView>(R.id.miniPlayerCover)
+        val miniPlayerEqualizer = findViewById<ImageView>(R.id.miniPlayerEqualizer)
+        val avd = miniPlayerEqualizer.drawable as? AnimatedVectorDrawable
 
         miniPlayerTitle.text = song.titulo
         miniPlayerArtist.text = song.artista
 
-        if (song.customImageUriString != null) {
-            Glide.with(this).load(song.customImageUriString).into(miniPlayerCover)
+        val isPlaying = MusicPlayerManager.isPlaying.value ?: false
+
+        if (isPlaying) {
+            miniPlayerCover.visibility = View.GONE
+            miniPlayerEqualizer.visibility = View.VISIBLE
+            avd?.start()
         } else {
-            miniPlayerCover.setImageResource(R.drawable.nota_musical)
+            miniPlayerEqualizer.visibility = View.GONE
+            avd?.stop()
+            miniPlayerCover.visibility = View.VISIBLE
+
+            if (song.customImageUriString != null) {
+                miniPlayerCover.clearColorFilter()
+                Glide.with(this).load(song.customImageUriString).into(miniPlayerCover)
+            } else {
+                miniPlayerCover.setImageResource(R.drawable.nota_musical)
+                miniPlayerCover.setColorFilter(ContextCompat.getColor(this, android.R.color.white))
+            }
         }
     }
 

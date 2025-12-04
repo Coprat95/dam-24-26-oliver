@@ -12,17 +12,17 @@
                     android:name="bar1"
                     android:pathData="M4,18 L4,6"
                     android:strokeWidth="4"
-                    android:strokeColor="#34F5C5" />
+                    android:strokeColor="#FFFFFF" />
                 <path
                     android:name="bar2"
                     android:pathData="M12,18 L12,6"
                     android:strokeWidth="4"
-                    android:strokeColor="#34F5C5" />
+                    android:strokeColor="#FFFFFF" />
                 <path
                     android:name="bar3"
                     android:pathData="M20,18 L20,6"
                     android:strokeWidth="4"
-                    android:strokeColor="#34F5C5" />
+                    android:strokeColor="#FFFFFF" />
             </group>
         </vector>
     </aapt:attr>

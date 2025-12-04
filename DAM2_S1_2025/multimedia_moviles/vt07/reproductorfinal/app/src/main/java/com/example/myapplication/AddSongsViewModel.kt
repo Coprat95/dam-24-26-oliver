@@ -8,55 +8,76 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.network.CoverArtService
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class AddSongsViewModel(application: Application) : AndroidViewModel(application) {
 
+    private val songRepository: SongRepository
+    private val coverArtService = CoverArtService()
+    private val TAG = "AddSongsViewModel"
+
     private val _songs = MutableLiveData<List<InfoCancion>>()
     val songs: LiveData<List<InfoCancion>> = _songs
-    private val coverArtService = CoverArtService()
+
+    init {
+        val songDao = SongDatabase.getDatabase(application).songDao()
+        songRepository = SongRepository(songDao, application)
+    }
 
     fun loadSongs() {
         viewModelScope.launch {
-            val songList = withContext(Dispatchers.IO) {
-                AudioDB.getAllSongs(getApplication())
+            Log.d(TAG, "Cargando lista de canciones desde el repositorio...")
+            val songList = songRepository.getAllSongs()
+            val infoCancionList = songList.map { song ->
+                InfoCancion(
+                    titulo = song.titulo,
+                    artista = song.artista ?: "Artista desconocido",
+                    album = null, // Album no disponible en la clase Song
+                    audioResId = null,
+                    audioUriString = song.audioUriString,
+                    fotoResId = 0, // El adaptador se encarga de la imagen por defecto
+                    customImageUriString = song.customImageUriString
+                )
             }
-            withContext(Dispatchers.IO) {
-                HiddenSongsManager.load(getApplication())
-            }
-            val filteredList = songList.filter { song ->
-                song.audioUriString?.let { !HiddenSongsManager.isHidden(it) } ?: true
-            }
-            _songs.postValue(filteredList)
+            _songs.value = infoCancionList
+            Log.d(TAG, "Se cargaron ${infoCancionList.size} canciones. Lanzando búsqueda de carátulas.")
+            launchCoverArtJobs(infoCancionList)
+        }
+    }
 
-            launch(Dispatchers.IO) {
-                var listUpdated = false
-                for (song in filteredList) {
-                    if (song.customImageUriString == null && song.artista.isNotEmpty()) {
-                        try {
-                            Log.d("CoverArt", "Buscando carátula para: ${song.artista}")
-                            val coverUrl = coverArtService.getCoverArtUrl(song.artista)
-                            if (coverUrl != null) {
-                                Log.d("CoverArt", "Carátula encontrada: $coverUrl")
-                                song.customImageUriString = coverUrl
-                                song.audioUriString?.let { uri ->
-                                    SongMetadataManager.guardarCaratula(getApplication(), uri, coverUrl)
-                                }
-                                listUpdated = true
-                            } else {
-                                Log.d("CoverArt", "No se encontró carátula para: ${song.artista}")
-                            }
-                        } catch (e: Exception) {
-                            Log.e("CoverArt", "Error buscando carátula: ${e.message}")
+    private fun launchCoverArtJobs(songs: List<InfoCancion>) {
+        Log.d("CoverArtService", "Iniciando búsqueda de carátulas para ${songs.size} canciones.")
+        songs.forEachIndexed { index, song ->
+            if (song.customImageUriString != null) {
+                Log.d("CoverArtService", "(${index}/${songs.size}) Saltando '${song.titulo}', ya tiene carátula.")
+                return@forEachIndexed
+            }
+
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
+                    Log.d("CoverArtService", "(${index}/${songs.size}) Buscando para '${song.titulo}'...")
+                    val coverUrl = coverArtService.getCoverArtUrl(song.artista, song.titulo, song.album)
+                    if (coverUrl != null) {
+                        val updatedSong = song.copy(customImageUriString = coverUrl)
+                        // Actualizar la base de datos para persistir la carátula
+                        song.audioUriString?.let {
+                            songRepository.updateCoverArt(it, coverUrl)
                         }
-                        delay(1000) // Pausa de 1 segundo para no sobrecargar la API
+                        
+                        // Actualizar la UI
+                        withContext(Dispatchers.Main) {
+                            val currentList = _songs.value?.toMutableList() ?: return@withContext
+                            val songIndex = currentList.indexOfFirst { it.audioUriString == updatedSong.audioUriString }
+                            if (songIndex != -1) {
+                                currentList[songIndex] = updatedSong
+                                _songs.value = currentList
+                                Log.i(TAG, "UI actualizada para '${updatedSong.titulo}'")
+                            }
+                        }
                     }
-                }
-                
-                if (listUpdated) {
-                    _songs.postValue(filteredList)
+                } catch (e: Exception) {
+                    Log.e("CoverArtService", "Error procesando '${song.titulo}': ${e.message}")
                 }
             }
         }

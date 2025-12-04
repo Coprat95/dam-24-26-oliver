@@ -51,10 +51,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:padding="8dp"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="3"
         app:layout_constraintTop_toBottomOf="@+id/header"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toTopOf="@+id/miniPlayer" />
 
     <TextView
         android:id="@+id/tvEmptyPlaylists"
@@ -74,7 +72,7 @@
         android:id="@+id/fabCreatePlaylistFromPlaylists"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="16dp"
         android:layout_marginEnd="24dp"
         android:src="@drawable/ic_add_circle"
         android:background="@drawable/circle_ripple"
@@ -83,7 +81,18 @@
         android:padding="0dp"
         android:contentDescription="Crear Playlist"
         app:tint="#34F5C5"
+        app:layout_constraintBottom_toTopOf="@+id/miniPlayer"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Mini Reproductor -->
+    <include
+        android:id="@+id/miniPlayer"
+        layout="@layout/mini_player"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

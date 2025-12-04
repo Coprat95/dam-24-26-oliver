@@ -11,15 +11,29 @@
     android:clickable="true"
     android:focusable="true">
 
-    <ImageView
-        android:id="@+id/miniPlayerCover"
+    <FrameLayout
+        android:id="@+id/miniPlayerCoverContainer"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/nota_musical"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageView
+            android:id="@+id/miniPlayerCover"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
+
+        <ImageView
+            android:id="@+id/miniPlayerEqualizer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp"
+            android:src="@drawable/avd_equalizer"
+            android:visibility="gone" />
+
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/miniPlayerTextContainer"
@@ -28,7 +42,7 @@
         android:orientation="vertical"
         android:layout_marginStart="12dp"
         android:layout_marginEnd="12dp"
-        app:layout_constraintStart_toEndOf="@id/miniPlayerCover"
+        app:layout_constraintStart_toEndOf="@id/miniPlayerCoverContainer"
         app:layout_constraintEnd_toStartOf="@id/miniPlayerPlay"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
@@ -65,7 +79,7 @@
         android:src="@drawable/play_mini"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/miniPlayerNext"
-        app:layout_constraintTop_toTopOf="parent"
+        app.layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.473" />
 
     <ImageButton
